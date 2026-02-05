@@ -2,6 +2,7 @@ package com.example.taskAPI.controller;
 
 import com.example.taskAPI.model.Task;
 import com.example.taskAPI.repository.TaskRepository;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +22,8 @@ public class TaskController {
     }
 
     @PostMapping("/tasks")
-    public String addTask(@RequestBody Task task) {
+    public String addTask(@Valid @RequestBody Task task) {
+
         repository.save(task);
         return "Task added";
     }
