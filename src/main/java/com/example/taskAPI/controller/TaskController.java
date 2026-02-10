@@ -5,6 +5,7 @@ import com.example.taskAPI.repository.TaskRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,12 +25,14 @@ public class TaskController {
     }
 
     @PostMapping("/tasks")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<Task> addTask(@Valid @RequestBody Task task) {
         repository.save(task);
         return new ResponseEntity<>(task, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/tasks/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteTask(@PathVariable int id) {
         Task task = repository.findById(id);
 
