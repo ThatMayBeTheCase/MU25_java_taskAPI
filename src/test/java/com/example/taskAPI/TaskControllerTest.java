@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,5 +74,70 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$[0].name").value("Köp mjölk"));
 
     }
+
+    @Test
+    void shouldAddNewTaskAndReturnCreated() throws Exception {
+        // Arrange
+        String jsonRequest = "{ \"id\" : 1, \"name\" : \"Städa\", \"done\": false  }";
+
+        //Act & Assert
+        mockMvc.perform(post("/tasks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Städa"));
+
+        // verifiera att databasens spara-metod faktiskt körs en gång
+        verify(repository, times(1)).save(any(Task.class));
+    }
+
+    @Test
+    void shouldDeleteTaskWhenFound() throws Exception {
+        // Arrange
+        Task task = new Task();
+        when(repository.findById(1)).thenReturn(task);
+
+        //Act & Assert
+        mockMvc.perform(delete("/tasks/1"))
+                .andExpect(status().isNoContent());
+
+        verify(repository).delete(1);
+    }
+
+
+    @Test
+    void shouldReturnNotFoundWhenDeletingNonExistingTask() throws Exception {
+        //Arrange
+        when(repository.findById(99)).thenReturn(null);
+
+        mockMvc.perform(delete("/tasks/99"))
+                .andExpect(status().isNotFound());
+
+        verify(repository, never()).delete(anyInt());
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

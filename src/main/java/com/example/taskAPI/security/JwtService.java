@@ -24,11 +24,12 @@ public class JwtService {
     }
 
     public String validateTokenAndGetUserName(String token) {
-        return  Jwts.parser()
-                    .setSigningKey(key)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getBody()
-                    .getSubject();
+        return  Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+
     }
 }
