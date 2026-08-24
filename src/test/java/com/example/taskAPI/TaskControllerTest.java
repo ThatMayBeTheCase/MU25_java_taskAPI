@@ -118,26 +118,23 @@ public class TaskControllerTest {
     }
 
 
+    @Test
+    void shouldPatchTaskNameSuccessfully() throws Exception {
+        // Arrange
+        Task existingTask = new Task();
+        existingTask.setId(1);
+        existingTask.setName("Gammalt namn");
+        existingTask.setDone(false);
+        when(repository.findById(1)).thenReturn(existingTask);
 
+        String patchJson = "{\"name\": \"Nytt namn\"}";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        // Act & Assert
+        mockMvc.perform(patch("/tasks/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patchJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Nytt namn")); // Borde ha uppdaterats
+    }
 
 }
