@@ -28,7 +28,7 @@ public class TaskController {
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<Task> addTask(@Valid @RequestBody Task task) {
         repository.save(task);
-        return new ResponseEntity<>(task, HttpStatus.CREATED);
+        return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
     @DeleteMapping("/tasks/{id}")
