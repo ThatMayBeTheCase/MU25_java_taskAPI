@@ -2,6 +2,10 @@ package com.example.taskAPI.controller;
 
 import com.example.taskAPI.model.Task;
 import com.example.taskAPI.repository.TaskRepository;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,31 +20,39 @@ public class TaskController {
     }
 
     @GetMapping("/tasks")
-    public List<Task> getAllTasks() {
-        return repository.findAll();
+    public ResponseEntity<List<Task>> getAllTasks() {
+        return ResponseEntity.ok(repository.findAll());
     }
 
     @PostMapping("/tasks")
-    public String addTask(@RequestBody Task task) {
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity<Task> addTask(@Valid @RequestBody Task task) {
         repository.save(task);
-        return "Task added";
+        return new ResponseEntity<>(task, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/tasks/{id}")
-    public String deleteTask(@PathVariable int id) {
-        repository.delete(id);
-        return "task deleted";
-    }
-
-    @PatchMapping("/tasks/{id}")
-    public String patchTask( @PathVariable int id , @RequestBody Task updates) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteTask(@PathVariable int id) {
         Task task = repository.findById(id);
 
         if (task == null) {
-            return "Task not found";
+            return ResponseEntity.notFound().build();
         }
 
-        if (updates.getName() != null) {
+        repository.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/tasks/{id}")
+    public ResponseEntity<Task> patchTask( @PathVariable int id , @RequestBody Task updates) {
+        Task task = repository.findById(id);
+
+        if (task == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (updates.getName() != null ) {
             task.setName(updates.getName());
         }
 
@@ -48,9 +60,7 @@ public class TaskController {
             task.setDone(updates.isDone());
         }
 
-        return "Task: " + id + " updated";
+        return ResponseEntity.ok(task);
     }
-
-
 
 }

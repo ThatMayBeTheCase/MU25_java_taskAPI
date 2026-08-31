@@ -1,9 +1,22 @@
 package com.example.taskAPI.model;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class Task {
     private Integer id;
+
+    @NotBlank(message = "Name have to have a value")
+    @Size(min=2, message="Name must be at least 2 characters")
     private String name;
+
+    @NotNull(message = "done need to be true or false")
     private Boolean done;
+
+//    @Email(message = "email invalid")
+//    private String email;
 
     public Task() {
     }
