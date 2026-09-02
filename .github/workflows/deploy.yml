@@ -23,3 +23,10 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/mu25-task-api:latest
+
+          #tirgger till render
+      - name: Trigger deployment on Render
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+
+          # pull på vår image
+          # publicerar en container
